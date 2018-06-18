@@ -61,6 +61,10 @@ const example = async () => {
   const metaColonyClient = await networkClient.getMetaColonyClient();
   console.log('Meta Colony address: ' + metaColonyClient.contract.address);
 
+  const { eventData: { skillId }} = await metaColonyClient.addGlobalSkill.send({ parentSkillId: 1 });
+
+  console.log(skillId);
+
   return colonyClient;
 };
 
