@@ -1,3 +1,5 @@
+const BigNumber = require('bn.js');
+
 const ecp = require('./ecp');
 
 const example = async (colonyClient) => {
@@ -17,6 +19,23 @@ const example = async (colonyClient) => {
   // Let's take a look at the newly created task
   const task = await colonyClient.getTask.call({ taskId })
   console.log(task);
+
+  const { address: workerAddress } = await colonyClient.adapter.loader.getAccount(1);
+
+  console.log(workerAddress);
+
+  await colonyClient.setTaskRoleUser.send({ taskId: taskId, role: 'WORKER', user: workerAddress });
+  const { address: tokenAddress } = await colonyClient.getToken.call();
+
+  console.log(tokenAddress);
+
+  const multiWorker = await colonyClient.setTaskWorkerPayout.startOperation({ taskId: taskId, source: tokenAddress, amount: new BigNumber(1) });
+
+  await multiWorker.sign();
+
+  const json = multiWorker.toJSON();
+
+  console.log(json);
 
   // Do some cleanup
   await ecp.stop();
