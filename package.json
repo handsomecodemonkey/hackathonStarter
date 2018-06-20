@@ -1,7 +1,7 @@
 {
-  "name": "@colony/colony-js-hackathon-starter",
+  "name": "colonyJS Hackathon - Augmented Basketball Association (ABA)",
   "version": "1.0.0",
-  "description": "Simple starter project for the colonyJS Hackathon",
+  "description": "Augmented Basketball Association Project for the colony hackathon",
   "main": "src/index.js",
   "scripts": {
     "postinstall": "git submodule update --init --recursive && cd src/lib/colonyNetwork && yarn",
@@ -12,11 +12,7 @@
     "test": "jest"
   },
   "contributors": [
-    "Christian Maniewski <chris@colony.io>",
-    "Griffin Hotchkiss <griffin@colony.io>",
-    "James Lefrère <james@colony.io>",
-    "Jan Kaßel <jan@colony.io>",
-    "Raul Glogovetan <raul@colony.io>"
+    "Erick Kusnadi <erick@handsomecodemonkey.com>",
   ],
   "license": "MIT",
   "dependencies": {
