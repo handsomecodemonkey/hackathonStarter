@@ -1,5 +1,5 @@
 {
-  "name": "colonyJS Hackathon - Augmented Basketball Association (ABA)",
+  "name": "@colony/hackathon-starter-aba",
   "version": "1.0.0",
   "description": "Augmented Basketball Association Project for the colony hackathon",
   "main": "src/index.js",
@@ -12,7 +12,7 @@
     "test": "jest"
   },
   "contributors": [
-    "Erick Kusnadi <erick@handsomecodemonkey.com>",
+    "Erick Kusnadi <erick@handsomecodemonkey.com>"
   ],
   "license": "MIT",
   "dependencies": {
