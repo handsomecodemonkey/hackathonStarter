@@ -1,3 +1,4 @@
 node_modules
 ganache-accounts.json
 yarn-error.log
+.DS_Store
