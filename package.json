@@ -9,7 +9,7 @@
     "start-ganache": "cd src/lib/colonyNetwork && ganache-cli -d --gasLimit 7000000 --acctKeys ganache-accounts.json --noVMErrorsOnRPCResponse",
     "start-trufflepig": "cd src/lib/colonyNetwork && trufflepig --ganacheKeyFile ganache-accounts.json",
     "start-server": "node src/index",
-    "init": "node src/init",
+    "create-mock-data": "node src/init",
     "test": "jest"
   },
   "contributors": [
