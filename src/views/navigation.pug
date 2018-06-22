@@ -1,7 +1,13 @@
-div.navbar-fixed
-	nav
+div
+	nav.blue
 		div.nav-wrapper
-			a(href="#").brand-logo Logo
-			ul.right
+			a(href="/home").brand-logo Logo
+			a(href="#", data-target="mobile-demo").sidenav-trigger
+				i.material-icons menu
+			ul.right.hide-on-med-and-down
 				li
-					a(href="#") Link1
+					a(href="#") Teams
+
+ul.sidenav#mobile-demo
+	li
+		a(href="#") Team
