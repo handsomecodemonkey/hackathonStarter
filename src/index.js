@@ -3,6 +3,8 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views','src/views');
 
+app.use(express.static('src/img'));
+app.use(express.static('src/scripts'));
 
 app.get('/home', function(req,res){
 	res.render('homepage');
