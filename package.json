@@ -24,7 +24,8 @@
     "ethers": "^3.0.17",
     "express": "^4.16.3",
     "ipfs": "^0.29.2",
-    "pug": "^2.0.3"
+    "pug": "^2.0.3",
+    "sqlite3": "^4.0.0"
   },
   "devDependencies": {
     "ganache-cli": "^6.1.0",
