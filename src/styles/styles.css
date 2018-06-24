@@ -1,0 +1,9 @@
+.hero-text {
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 20px;
+}
+
+.team-card-title {
+	padding: 20px;
+	font-weight: bold;
+}
