@@ -171,7 +171,10 @@ const example = async () => {
     }
 
     // Unique, immutable hash on IPFS
-    var specificationHash = await ecp.saveTaskSpecification({ title: "Create Scout Report", description: "Create Scout Report " + domainName + ' task.' });
+    var taskObj1 = {};
+    taskObj1.title = "Create Scout Report";
+    taskObj1.description = "This is an open task to create a scouting report for the " + domainName + '.';
+    var specificationHash = await ecp.saveTaskSpecification(taskObj1);
     //console.log('Specification hash', specificationHash);
     // Create a task in the root domain
     var { eventData: { taskId }} = await colonyClient.createTask.send({ specificationHash, domainId: domains.count});
@@ -185,7 +188,7 @@ const example = async () => {
 
     db.serialize(function() {
           insertIntoTable(db,"DOMAIN",["id","name","colony_id","root_local_skill_id"],[domains.count,domainName,colonyId,baseDomain.localSkillId]);
-          insertIntoTable(db,"TASK",["title","description","domain_id"],["Create Scout Report","Create Scout Report " + domainName,domains.count]);
+          insertIntoTable(db,"TASK",["title","description","domain_id"],[taskObj1.title,taskObj1.description,domains.count]);
     });
   }
 
