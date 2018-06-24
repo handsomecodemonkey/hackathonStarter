@@ -39,9 +39,27 @@ app.get('/team/:id', function(req, res) {
 		} else {
 			var object = {};
 			object.teamName = row.name;
+			object.domainId = teamDomainId;
 
 			db.close();
 			res.render('team', object);
+		}
+	});
+
+})
+
+app.get('/tasksForDomain/:domainId', function(req,res){
+	var teamDomainId = req.params.domainId;
+
+	var sql = "SELECT ID, TITLE, DESCRIPTION FROM TASK WHERE DOMAIN_ID = ?";
+	var db = connectToDB();
+	db.all(sql, [teamDomainId],(err,rows) => {
+		if(err){
+			throw err;
+		} else {
+			console.log(rows);
+			res.send(rows);
+			return rows;
 		}
 	});
 

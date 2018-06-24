@@ -8,6 +8,14 @@ html
 
 		div.container
 			h3 Welcome to the #{teamName} Front Office!
+			div
+				h4 Tasks
+				ul.collection#tasks-list
 
 		include footer
 		include common-scripts
+		script.
+			$(document).ready(function(){
+				getTasksForDomain(#{domainId});
+			});
+			
