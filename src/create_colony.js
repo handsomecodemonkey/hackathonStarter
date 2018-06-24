@@ -1,3 +1,65 @@
+//Database functions and constants
+const CREATE_COLONY_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS colony (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                     name VARCHAR(100), 
+                     meta_colony_id integer default 0, 
+                     address VARCHAR(50));`;
+
+const CREATE_SKILL_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS skill (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    name VARCHAR(100));`;
+
+const CREATE_DOMAIN_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS domain (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                   name VARCHAR(100), 
+                                   colony_id integer, 
+                                   root_local_skill_id INTEGER,
+                                   foreign key(colony_id) references colony(id),
+                                   FOREIGN KEY(root_local_skill_id) REFERENCES skill(id));`;
+
+const CREATE_TASK_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                          title VARCHAR(100), 
+                                description VARCHAR(2000),
+                          domain_id integer, 
+                                foreign key(domain_id) references domain(id))`;
+
+//Function to connect to SQL Lite DB cache
+function connectToDB() {
+  var sqlite3 = require('sqlite3').verbose();
+  var db = new sqlite3.Database('src/temp.db', (err) => {
+    console.log("Connecting to DB...")
+    if(err) {
+      console.log("problem connecting to db");
+      db.close();
+      return null;
+    } else {
+      console.log("succesful connection to db");
+    }
+  });
+  return db;
+}
+
+function createTable(db, sql) {
+  db.serialize(function() {
+    db.run(sql);
+  });
+}
+
+function insertIntoTable(db,tableName,columns,values) {
+  var sql = "INSERT INTO " + tableName + "(";
+  sql += (columns.map((column) => column).join(',')) + ") ";
+  sql += "VALUES(";
+  sql += (values.map((value) => '?').join(',')) + "); ";
+    
+  db.run(sql,values, function(err) {
+    if(err) {
+      console.log(err);
+    }
+  });
+
+}
+
 // Import the prerequisites
 
 const { providers, Wallet } = require('ethers');
@@ -13,8 +75,22 @@ const loader = new TrufflepigLoader();
 // Create a provider for local TestRPC (Ganache)
 const provider = new providers.JsonRpcProvider('http://localhost:8545/');
 
+const ecp = require('./ecp');
+
+
 // The following methods use Promises
 const example = async () => {
+
+  await ecp.init();
+
+  //Create tables
+  var db = connectToDB();
+  db.serialize(function() {
+    createTable(db, CREATE_COLONY_TABLE_SQL);
+    createTable(db, CREATE_SKILL_TABLE_SQL);
+    createTable(db, CREATE_DOMAIN_TABLE_SQL);
+    createTable(db, CREATE_TASK_TABLE_SQL);
+  });
 
   // Get the private key from the first account from the ganache-accounts
   // through trufflepig
@@ -34,15 +110,14 @@ const example = async () => {
   const networkClient = new ColonyNetworkClient({ adapter });
   await networkClient.init();
 
-  // Let's deploy a new ERC20 token for our Colony.
-  // You could also skip this step and use a pre-existing/deployed contract.
+  // 1) Deploy Token
   const tokenAddress = await networkClient.createToken({
-    name: 'Cool Colony Token',
-    symbol: 'COLNY',
+    name: 'ABA Token',
+    symbol: 'ABA',
   });
   console.log('Token address: ' + tokenAddress);
 
-  // Create a cool Colony!
+  // 2) Create Colony
   const {
     eventData: { colonyId, colonyAddress },
   } = await networkClient.createColony.send({ tokenAddress });
@@ -53,15 +128,73 @@ const example = async () => {
 
   // For a colony that exists already, you just need its ID:
   const colonyClient = await networkClient.getColonyClient(colonyId);
-
-  // Or alternatively, just its address:
-  // const colonyClient = await networkClient.getColonyClientByAddress(colonyAddress);
+  const baseDomain = await colonyClient.getDomain.call({domainId: 1}); //1 is the first domain
 
   // You can also get the Meta Colony:
   const metaColonyClient = await networkClient.getMetaColonyClient();
   console.log('Meta Colony address: ' + metaColonyClient.contract.address);
 
+  //Initial Data cache setups
+  db.serialize(function() {
+    insertIntoTable(db, "COLONY", ["id","name","meta_colony_id","address"], [1,"Meta-Colony",0,metaColonyClient.contract.address]);
+    insertIntoTable(db, "COLONY", ["id,name,meta_colony_id,address"],[colonyId,"ABA",1,colonyAddress]);
+    insertIntoTable(db,"SKILL", ["id","name"],[1,"Root Globabl Skill"]);
+    insertIntoTable(db,"SKILL", ["id","name"],[2,"Local Root Skill for Meta-Colony"]);
+    insertIntoTable(db,"SKILL", ["id","name"],[3,"Local Root Skill for ABA Colony"]);
+    insertIntoTable(db,"DOMAIN",["id","name","colony_id","root_local_skill_id"],[1,"ABA Root Domain",colonyId,baseDomain.localSkillId]);
+  });
+
+
+  // 3) Create domains (4 for testing one for each team) & Create Tasks
+  //TODO put mock data into a json file domains, colony, token, etc.
+
+  for(var i = 0; i < 5; i++) {
+
+    var m = await colonyClient.addDomain.send({parentSkillId : baseDomain.localSkillId});
+    var domains = await colonyClient.getDomainCount.call();
+    var domainName = "";
+    console.log("domain id = " + domains.count);
+
+    switch(domains.count) {
+      case 2:
+        domainName = "Stags";
+        break;
+      case 3:
+        domainName = "Comets";
+        break;
+      case 4:
+        domainName = "Steers";
+        break;
+      case 5:
+        domainName = "Royals";
+        break;
+    }
+
+    // Unique, immutable hash on IPFS
+    var specificationHash = await ecp.saveTaskSpecification({ title: "Create Scout Report", description: "Create Scout Report " + domainName + ' task.' });
+    //console.log('Specification hash', specificationHash);
+    // Create a task in the root domain
+    var { eventData: { taskId }} = await colonyClient.createTask.send({ specificationHash, domainId: domains.count});
+
+    //console.log("changing task due date to: " + new Date());
+    //await colonyClient.setTaskDueDate.startOperation({ taskId: 1, dueDate: new Date() });
+
+    // Let's take a look at the newly created task
+    //var task = await colonyClient.getTask.call({ taskId });
+    //console.log(task);
+
+    db.serialize(function() {
+          insertIntoTable(db,"DOMAIN",["id","name","colony_id","root_local_skill_id"],[domains.count,domainName,colonyId,baseDomain.localSkillId]);
+          insertIntoTable(db,"TASK",["title","description","domain_id"],["Create Scout Report","Create Scout Report " + domainName,domains.count]);
+    });
+  }
+
+  // Do some cleanup
+  await ecp.stop();
+  db.close();
+
   return colonyClient;
 };
 
 module.exports = example;
+
