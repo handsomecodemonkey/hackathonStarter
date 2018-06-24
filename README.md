@@ -1,6 +1,4 @@
-# colonyJS Hackathon Starter Project
-
-This is a simple starter project for [colonyJS](https://github.com/JoinColony/colonyJS) that demonstrates how to get connected to the an instance of the Colony Network with colonyJS and how to create a Colony.
+# ABA Hackathon Project
 
 ## Prerequisites
 You must have `yarn`, `nodejs`, and `npm` installed to use this starter.
@@ -10,7 +8,7 @@ This starter needs to run with node version >= 8.2.1 - you may find it helpful t
 ## Install
 Clone to your working directory of choice with:
 ```
-~$ git clone https://github.com/JoinColony/hackathonStarter.git
+~$ https://github.com/handsomecodemonkey/hackathonStarter
 ```
 
 Move to your new starter directory and install dependencies:
@@ -21,7 +19,8 @@ $ cd hackathonStarter/
 ```
 
 ## Get Started
-Note: This project contains pre-written scripts that perform the same steps shown in the [Get Started](https://joincolony.github.io/colonyjs/docs-get-started/) page of the colonyJS docs. Have a look at the full documentation to see what's happening under-the-hood!
+
+This project uses express-js to serve web pages and sqlite as a caching mechanism from the blockchain. Materialize was used on the front-end.
 
 ### Start a test blockchain
 In a new terminal window:
@@ -40,8 +39,13 @@ In a new terminal window, `cd` to the hackathonStarter and start TrufflePig with
 ~/hackathonStarter$ yarn start-trufflepig
 ```
 
+### Initialize with mock data
+```
+~/hackathonStarter$ yarn create-mock-data
+```
+
 ### Run example code
 The code example included in this starter will use colonyJS to create a new token, a new colony, and return the address of the Meta Colony on your running test blockchain.
 ```
-~/hackathonStarter$ yarn start
+~/hackathonStarter$ yarn start-server
 ```
