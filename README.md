@@ -8,7 +8,7 @@ This starter needs to run with node version >= 8.2.1 - you may find it helpful t
 ## Install
 Clone to your working directory of choice with:
 ```
-~$ https://github.com/handsomecodemonkey/hackathonStarter
+~$ git clone https://github.com/handsomecodemonkey/hackathonStarter
 ```
 
 Move to your new starter directory and install dependencies:
@@ -20,7 +20,8 @@ $ cd hackathonStarter/
 
 ## Get Started
 
-This project uses express-js to serve web pages and sqlite as a caching mechanism from the blockchain. Materialize was used on the front-end.
+This project uses express-js to serve web pages and sqlite as a caching mechanism from the blockchain.
+Materialize was used on the front-end.
 
 ### Start a test blockchain
 In a new terminal window:
@@ -40,12 +41,13 @@ In a new terminal window, `cd` to the hackathonStarter and start TrufflePig with
 ```
 
 ### Initialize with mock data
+This will create the token, colony, domains (every team has a domain), and a sample task in each domain.
 ```
 ~/hackathonStarter$ yarn create-mock-data
 ```
 
 ### Run example code
-The code example included in this starter will use colonyJS to create a new token, a new colony, and return the address of the Meta Colony on your running test blockchain.
+The code will start an express js server hosting web pages at localhost:3000. Go to http://localhost:3000/home to get to the ABA homepage. Clicking on a team name will bring you to the team's front office and the tasks associated with the team/domain.
 ```
 ~/hackathonStarter$ yarn start-server
 ```
